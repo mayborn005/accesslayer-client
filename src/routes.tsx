@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import RootLayout from './components/common/RootLayout';
 import HomePage from './pages/HomePage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -5,7 +6,11 @@ import MarketplacePage from './pages/MarketplacePage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import CreatorDetailPage from './pages/CreatorDetailPage';
 import CreatorDashboardPage from './pages/CreatorDashboardPage';
+import CreatorPublicProfilePage from './pages/CreatorPublicProfilePage';
 import NotificationsPage from './pages/NotificationsPage';
+import AccountSettingsPage from './pages/AccountSettingsPage';
+import NotificationPreferencesPage from './pages/NotificationPreferencesPage';
+import TransactionHistoryPage from './pages/TransactionHistoryPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import DiscoveryPage from './pages/DiscoveryPage';
 import ProfilePage from './pages/ProfilePage';
@@ -15,6 +20,27 @@ import GovernancePage from './pages/GovernancePage';
 import ProposalDetailPage from './pages/ProposalDetailPage';
 import ReferralDashboardPage from './pages/ReferralDashboardPage';
 import CreateCreatorKeyPage from './pages/CreateCreatorKeyPage';
+import StakingDashboardPage from './pages/StakingDashboardPage';
+import RevenueDistributionHistoryPage from './pages/RevenueDistributionHistoryPage';
+import BundleManagementPage from './pages/BundleManagementPage';
+import CreatorRevenueDashboardPage from './pages/CreatorRevenueDashboardPage';
+import AtomicSwapCreatePage from './pages/AtomicSwapCreatePage';
+import AtomicSwapProposalPage from './pages/AtomicSwapProposalPage';
+import StatusPage from './pages/StatusPage';
+import HolderLeaderboardPage from './pages/HolderLeaderboardPage';
+import BundlesPage from './pages/BundlesPage';
+import BundleDetailPage from './pages/BundleDetailPage';
+import SearchResultsPage from './pages/SearchResultsPage';
+import KeyDiscoveryFeedPage from './pages/KeyDiscoveryFeedPage';
+import WalletPortfolioPage from './pages/WalletPortfolioPage';
+import AutoInvestDashboardPage from './pages/AutoInvestDashboardPage';
+import RouteErrorBoundary from './components/common/RouteErrorBoundary';
+
+function withRouteErrorBoundary(element: ReactNode, routeName: string) {
+	return (
+		<RouteErrorBoundary routeName={routeName}>{element}</RouteErrorBoundary>
+	);
+}
 
 export const routes = [
 	{
@@ -23,15 +49,23 @@ export const routes = [
 		children: [
 			{
 				path: '/',
-				element: <HomePage />,
+				element: withRouteErrorBoundary(<HomePage />, 'Marketplace'),
 			},
 			{
 				path: '/creators',
-				element: <HomePage />,
+				element: withRouteErrorBoundary(<HomePage />, 'Marketplace'),
 			},
 			{
 				path: '/marketplace',
-				element: <MarketplacePage />,
+				element: withRouteErrorBoundary(<MarketplacePage />, 'Marketplace'),
+			},
+			{
+				path: '/bundles',
+				element: <BundlesPage />,
+			},
+			{
+				path: '/bundles/:id',
+				element: <BundleDetailPage />,
 			},
 			{
 				path: '/discovery',
@@ -42,16 +76,50 @@ export const routes = [
 				element: <DiscoveryPage />,
 			},
 			{
+				// Key discovery feed with sort + category filters (#1113).
+				path: '/discovery/feed',
+				element: <KeyDiscoveryFeedPage />,
+			},
+			{
 				path: '/leaderboard',
 				element: <LeaderboardPage />,
 			},
 			{
 				path: '/creator/:id',
-				element: <CreatorDetailPage />,
+				element: withRouteErrorBoundary(
+					<CreatorDetailPage />,
+					'Key detail'
+				),
 			},
 			{
 				path: '/creators/:id',
-				element: <CreatorDetailPage />,
+				element: withRouteErrorBoundary(
+					<CreatorDetailPage />,
+					'Key detail'
+				),
+			},
+			{
+				path: '/keys/:id',
+				element: withRouteErrorBoundary(
+					<CreatorDetailPage />,
+					'Key detail'
+				),
+			},
+			{
+				path: '/creator/:id/leaderboard',
+				element: <HolderLeaderboardPage />,
+			},
+			{
+				path: '/creators/:id/leaderboard',
+				element: <HolderLeaderboardPage />,
+			},
+			{
+				path: '/creator/:address/profile',
+				element: <CreatorPublicProfilePage />,
+			},
+			{
+				path: '/creators/:address/profile',
+				element: <CreatorPublicProfilePage />,
 			},
 			{
 				path: '/creator/:id/dashboard',
@@ -62,12 +130,52 @@ export const routes = [
 				element: <CreatorDashboardPage />,
 			},
 			{
+				path: '/creator/:id/bundles',
+				element: <BundleManagementPage />,
+			},
+			{
+				path: '/creators/:id/bundles',
+				element: <BundleManagementPage />,
+			},
+			{
+				path: '/creator/:id/revenue',
+				element: <CreatorRevenueDashboardPage />,
+			},
+			{
+				path: '/creators/:id/revenue',
+				element: <CreatorRevenueDashboardPage />,
+			},
+			{
+				path: '/creator/revenue',
+				element: <CreatorRevenueDashboardPage />,
+			},
+			{
 				path: '/notifications',
 				element: <NotificationsPage />,
 			},
 			{
+				path: '/settings',
+				element: <AccountSettingsPage />,
+			},
+			{
+				path: '/account/settings',
+				element: <AccountSettingsPage />,
+			},
+			{
 				path: '/profile',
-				element: <ProfilePage />,
+				element: withRouteErrorBoundary(<ProfilePage />, 'Portfolio'),
+			},
+			{
+				path: '/profile/:wallet',
+				element: withRouteErrorBoundary(<ProfilePage />, 'Portfolio'),
+			},
+			{
+				// Wallet portfolio table with holdings + PnL breakdown (#1116).
+				path: '/portfolio',
+				element: withRouteErrorBoundary(
+					<WalletPortfolioPage />,
+					'Wallet portfolio'
+				),
 			},
 			{
 				path: '/following',
@@ -94,8 +202,49 @@ export const routes = [
 				element: <CreateCreatorKeyPage />,
 			},
 			{
+				path: '/staking',
+				element: <StakingDashboardPage />,
+			},
+			{
+				path: '/auto-invest',
+				element: <AutoInvestDashboardPage />,
+			},
+			{
+				path: '/swap/create',
+				element: <AtomicSwapCreatePage />,
+			},
+			{
+				path: '/swap/:proposalId',
+				element: <AtomicSwapProposalPage />,
+			},
+			{
 				path: '/admin/dashboard',
-				element: <AdminDashboardPage />,
+				element: withRouteErrorBoundary(
+					<AdminDashboardPage />,
+					'Admin dashboard'
+				),
+			},
+			{
+				path: '/revenue-distribution',
+				element: <RevenueDistributionHistoryPage />,
+			},
+			{
+				// Public platform status page (#1051).
+				path: '/status',
+				element: <StatusPage />,
+			},
+			{
+				// Global search results page (#1053).
+				path: '/search',
+				element: <SearchResultsPage />,
+			},
+			{
+				path: '/settings/notifications',
+				element: <NotificationPreferencesPage />,
+			},
+			{
+				path: '/transactions',
+				element: <TransactionHistoryPage />,
 			},
 			{
 				path: '*',
