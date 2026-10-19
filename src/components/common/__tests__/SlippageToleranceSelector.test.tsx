@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import SlippageToleranceSelector from '@/components/common/SlippageToleranceSelector';
+import SlippageToleranceSelector from '../SlippageToleranceSelector';
 
 describe('SlippageToleranceSelector', () => {
 	function renderSelector(
@@ -10,21 +10,32 @@ describe('SlippageToleranceSelector', () => {
 	) {
 		const onChange = vi.fn();
 		const utils = render(
-			<SlippageToleranceSelector value={1} onChange={onChange} {...overrides} />
+			<SlippageToleranceSelector
+				value={1}
+				onChange={onChange}
+				{...overrides}
+			/>
 		);
 		return { onChange, ...utils };
 	}
 
-	it('renders the 0.5% / 1% / 5% presets', () => {
+	it('renders the 0.5% / 1% / 2% presets', () => {
 		renderSelector();
 		expect(screen.getByTestId('slippage-preset-0.5')).toBeInTheDocument();
 		expect(screen.getByTestId('slippage-preset-1')).toBeInTheDocument();
+		expect(screen.getByTestId('slippage-preset-2')).toBeInTheDocument();
+	});
+
+	it('supports custom presets via prop', () => {
+		renderSelector({ presets: [1, 3, 5] });
+		expect(screen.getByTestId('slippage-preset-1')).toBeInTheDocument();
+		expect(screen.getByTestId('slippage-preset-3')).toBeInTheDocument();
 		expect(screen.getByTestId('slippage-preset-5')).toBeInTheDocument();
 	});
 
 	it('marks the currently selected preset as pressed', () => {
-		renderSelector({ value: 5 });
-		expect(screen.getByTestId('slippage-preset-5')).toHaveAttribute(
+		renderSelector({ value: 2 });
+		expect(screen.getByTestId('slippage-preset-2')).toHaveAttribute(
 			'aria-pressed',
 			'true'
 		);
@@ -36,15 +47,15 @@ describe('SlippageToleranceSelector', () => {
 
 	it('calls onChange with the preset value when clicked', () => {
 		const { onChange } = renderSelector({ value: 1 });
-		fireEvent.click(screen.getByTestId('slippage-preset-5'));
-		expect(onChange).toHaveBeenCalledWith(5);
+		fireEvent.click(screen.getByTestId('slippage-preset-2'));
+		expect(onChange).toHaveBeenCalledWith(2);
 	});
 
 	it('displays the currently selected value', () => {
 		renderSelector({ value: 0.5 });
-		expect(screen.getByTestId('slippage-tolerance-current-value')).toHaveTextContent(
-			'0.5%'
-		);
+		expect(
+			screen.getByTestId('slippage-tolerance-current-value')
+		).toHaveTextContent('0.5%');
 	});
 
 	it('calls onChange with a valid custom value', () => {

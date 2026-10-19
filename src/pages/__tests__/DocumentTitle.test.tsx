@@ -4,6 +4,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import HomePage from '@/pages/HomePage';
 import ProfilePage from '@/pages/ProfilePage';
 
+vi.mock('wagmi', () => ({
+	useAccount: () => ({ address: undefined, isConnected: false }),
+}));
 vi.mock('@/components/home/Header', () => ({
 	default: () => <header>Header</header>,
 }));
@@ -12,6 +15,9 @@ vi.mock('@/components/home/Hero', () => ({
 }));
 vi.mock('@/components/home/CreatorSpotlight', () => ({
 	default: () => <section>Creator Spotlight</section>,
+}));
+vi.mock('@/components/home/MarketOverview', () => ({
+	default: () => <section>Market Overview</section>,
 }));
 vi.mock('@/components/home/TrendingLeaderboard', () => ({
 	default: () => <section>Trending Leaderboard</section>,
@@ -25,17 +31,38 @@ vi.mock('@/components/home/FAQ', () => ({
 vi.mock('@/components/home/Footer', () => ({
 	default: () => <footer>Footer</footer>,
 }));
+vi.mock('@/components/common/ConnectWalletCtaBanner', () => ({
+	default: () => null,
+}));
 vi.mock('@/components/common/ReferralLinkPanel', () => ({
 	default: () => <div>Referral Link Panel</div>,
 }));
 vi.mock('@/components/common/TradeHistoryTable', () => ({
 	default: () => <div>Trade History Table</div>,
 }));
+vi.mock('@/components/common/PortfolioSummaryHeader', () => ({
+	default: () => <div>Portfolio Summary</div>,
+}));
+vi.mock('@/components/common/HeldKeysGrid', () => ({
+	default: () => <div>Held Keys Grid</div>,
+}));
+vi.mock('@/components/common/StakingPositionsList', () => ({
+	default: () => <div>Staking Positions</div>,
+}));
 vi.mock('@/hooks/useNavigationTiming', () => ({
 	useNavigationTiming: vi.fn(),
 }));
 vi.mock('@/hooks/useProfileStore', () => ({
 	useProfileStore: () => ({ firstName: 'Alex', lastName: 'Rivers' }),
+}));
+vi.mock('@/hooks/useWallet', () => ({
+	useWalletHoldings: () => ({ data: [], isLoading: false }),
+}));
+vi.mock('@/hooks/useCreatorPrices', () => ({
+	useCreatorPrices: () => ({ data: [], isLoading: false }),
+}));
+vi.mock('@/hooks/useStakingPositions', () => ({
+	useStakingPositions: () => ({ data: { positions: [] }, isLoading: false }),
 }));
 
 describe('page document titles', () => {
